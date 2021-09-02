@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 requests = "*"
 jinja2 = "*"
+requests-cache = "*"
 
 [requires]
 python_version = "3.9"

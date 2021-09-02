@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     for repo in repositories:
         repository_name = repo.get("name")
-        print(f"Processing :: {repository_name}")
+        # print(f"Processing :: {repository_name}")
 
         repository = Repository(owner, repository_name)
 
@@ -76,19 +76,26 @@ if __name__ == "__main__":
             security_alerts = RepositorySecurityAlerts()
 
             for result in results:
-                security_alerts.addAlert(**result)
+                alert = security_alerts.createAlert(**result)
+
+                if alert.state == "fixed":
+                    alert.remediated = github.findFixByCommit(
+                        repository.name, alert.last_commit, alert.created
+                    ).get("pushedDate")
+
+                security_alerts.alerts.append(alert)
 
             repository.total = len(security_alerts.alerts)
             repository.closed = len(security_alerts.getClosed())
             repository.open = repository.total - repository.closed
 
-            print(f"All Results :: {repository.total}")
-            print(f"Closed      :: {repository.closed}")
-
             repository.mttr = security_alerts.getTTR()
-            print(f"Time to Remediate :: {repository.mttr}")
+
+            print(f"{repository}")
+            # print(f"Time to Remediate :: {repository.mttr}")
         else:
-            print("Skipping as not security issues...")
+            # print("Skipping as not security issues...")
+            pass
 
         repositories_results.append(repository)
 
