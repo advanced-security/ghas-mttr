@@ -17,6 +17,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
     - shell: bash
       run: |
         echo "::group::Installing Dependencies"
